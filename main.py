@@ -83,6 +83,7 @@ def main():
         ("Linha 4 (Amarela)", (255, 255, 0)),
         ("Linha 5 (Branca)", (255, 255, 255)),
         ("Linha 6 (Rosa)", (255, 0, 255)),
+        ("Linha 7 (Azul Claro)", (173, 216, 230))
     ]
     running = True
     origin_x, origin_y = width // 2, height // 2
@@ -101,6 +102,7 @@ def main():
         line4_points = [to_screen_coords(x, y, origin_x, origin_y) for x, y in midpoint_line(100, -200, 100, 200)]
         line5_points = [to_screen_coords(x, 100, origin_x, origin_y) for x, y in midpoint_line(-150, 100, 150, 100)]
         line6_points = [to_screen_coords(x, -100, origin_x, origin_y) for x, y in midpoint_line(-150, -100, 150, -100)]
+        line7_points = [to_screen_coords(x, y, origin_x, origin_y) for x, y in midpoint_line(-200, -283, 200, 298)]
 
         # Desenha as linhas
         for x, y in line1_points: pygame.draw.rect(screen, (255, 255, 255), (x, y, 2, 2))
@@ -109,6 +111,7 @@ def main():
         for x, y in line4_points: pygame.draw.rect(screen, (255, 255, 0), (x, y, 2, 2))
         for x, y in line5_points: pygame.draw.rect(screen, (0, 255, 255), (x, y, 2, 2))
         for x, y in line6_points: pygame.draw.rect(screen, (255, 0, 255), (x, y, 2, 2))
+        for x, y in line7_points: pygame.draw.rect(screen, (173, 216, 230), (x, y, 2, 2))
 
         # Desenha legendas no canto
         y_offset = 10
