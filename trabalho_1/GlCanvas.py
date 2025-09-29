@@ -363,12 +363,6 @@ class GLCanvas(QOpenGLWidget):
                 QPointF(0.7 * w, 0.65 * h), QPointF(0.7 * w, 0.5 * h),
                 QPointF(0.2 * w, 0.5 * h)
             ],
-            "Complex concave": [
-                QPointF(0.1 * w, 0.2 * h), QPointF(0.4 * w, 0.1 * h),
-                QPointF(0.7 * w, 0.2 * h), QPointF(0.9 * w, 0.5 * h),
-                QPointF(0.7 * w, 0.8 * h), QPointF(0.4 * w, 0.9 * h),
-                QPointF(0.1 * w, 0.8 * h), QPointF(0.05 * w, 0.5 * h)
-            ],
         }
         if name in examples:
             self.points = examples[name]

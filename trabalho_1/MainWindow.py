@@ -17,7 +17,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Trabalho 1: Preencher Polígono com (ET/AET) — Qt + OpenGL")
+        self.setWindowTitle("Trabalho 1: Preencher Polígono com (ET/AET)")
         self.resize(1000, 700)
 
         self.canvas = GLCanvas()
@@ -82,7 +82,7 @@ class MainWindow(QMainWindow):
         tb.addSeparator()
         tb.addWidget(QLabel("Examples:"))
         combo = QComboBox()
-        combo.addItems(["(choose)", "Convex pentagon", "Concave arrow", "Complex concave"])
+        combo.addItems(["(choose)", "Convex pentagon", "Concave arrow"])
         combo.currentTextChanged.connect(self._on_example)
         tb.addWidget(combo)
 
