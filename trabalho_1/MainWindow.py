@@ -43,35 +43,35 @@ class MainWindow(QMainWindow):
         • escolher exemplos 
         """
 
-        tb = QToolBar("Tools")
+        tb = QToolBar("Ferramentas")
         tb.setMovable(False)
         self.addToolBar(Qt.ToolBarArea.TopToolBarArea, tb)
 
         # Close polygon
-        act_close = QAction("Close Polygon", self)
+        act_close = QAction("Fechar Poligono", self)
         act_close.triggered.connect(self.canvas.close_polygon)
         tb.addAction(act_close)
 
         # Fill
-        act_fill = QAction("Fill", self)
+        act_fill = QAction("Preencher", self)
         act_fill.triggered.connect(self.canvas.fill)
         tb.addAction(act_fill)
 
         # Clear
-        act_clear = QAction("Clear", self)
+        act_clear = QAction("Limpar", self)
         act_clear.triggered.connect(self.canvas.clear)
         tb.addAction(act_clear)
 
         tb.addSeparator()
 
         # Fill color
-        act_color = QAction("Fill Color", self)
+        act_color = QAction("Cor de Preenchimento", self)
         act_color.triggered.connect(self.pick_color)
         tb.addAction(act_color)
 
         # Stroke width spinner
         tb.addSeparator()
-        tb.addWidget(QLabel("Stroke Width:"))
+        tb.addWidget(QLabel("Espessura da Linha:"))
         spin = QSpinBox()
         spin.setRange(1, 20)
         spin.setValue(self.canvas.stroke_width)
@@ -80,9 +80,9 @@ class MainWindow(QMainWindow):
 
         # Example dropdown
         tb.addSeparator()
-        tb.addWidget(QLabel("Examples:"))
+        tb.addWidget(QLabel("Exemplos:"))
         combo = QComboBox()
-        combo.addItems(["(choose)", "Convex pentagon", "Concave arrow"])
+        combo.addItems(["(Escolher)", "Convexo", "Concavo"])
         combo.currentTextChanged.connect(self._on_example)
         tb.addWidget(combo)
 
@@ -98,19 +98,19 @@ class MainWindow(QMainWindow):
         """
 
         mb = self.menuBar()
-        file_m = mb.addMenu("&File")
-        act_exit = QAction("Exit", self)
+        file_m = mb.addMenu("&Arquivo")
+        act_exit = QAction("Sair", self)
         act_exit.triggered.connect(self.close)
         file_m.addAction(act_exit)
 
-        ex_m = mb.addMenu("&Examples")
-        for name in ["Convex pentagon", "Concave arrow", "Complex concave"]:
+        ex_m = mb.addMenu("&Exemplos")
+        for name in ["Convexo", "Concavo"]:
             act = QAction(name, self)
             act.triggered.connect(lambda checked=False, n=name: self.canvas.load_example(n))
             ex_m.addAction(act)
 
-        help_m = mb.addMenu("&Help")
-        act_about = QAction("About", self)
+        help_m = mb.addMenu("&Ajuda")
+        act_about = QAction("Sobre", self)
         act_about.triggered.connect(self._about)
         help_m.addAction(act_about)
 
@@ -136,7 +136,7 @@ class MainWindow(QMainWindow):
         Abre diálogo para o usuário escolher a cor de preenchimento. 
         """
 
-        c = QColorDialog.getColor(self.canvas.fill_color, self, "Choose Fill Color",
+        c = QColorDialog.getColor(self.canvas.fill_color, self, "Escolher Cor de Preenchimento",
                                   QColorDialog.ColorDialogOption.ShowAlphaChannel)
         if c.isValid():
             self.canvas.set_fill_color(c)
@@ -146,7 +146,7 @@ class MainWindow(QMainWindow):
         Carrega polígono de exemplo quando selecionado no dropdown. 
         """
 
-        if text and text != "(choose)":
+        if text and text != "(Escolher)":
             self.canvas.load_example(text)
 
     def _show_duo(self):

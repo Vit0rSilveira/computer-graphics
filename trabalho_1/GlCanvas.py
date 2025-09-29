@@ -67,7 +67,7 @@ class GLCanvas(QOpenGLWidget):
         self.show_vertices: bool = True
         self.snap_preview: bool = True
 
-    # ---------- OpenGL lifecycle ----------
+    # ---------- OpenGL ----------
     def initializeGL(self):
         """ 
         Configurações iniciais do OpenGL, como cor de fundo, blending 
@@ -86,7 +86,6 @@ class GLCanvas(QOpenGLWidget):
         Define origem no canto superior esquerdo. 
         """
 
-        # 2D orthographic projection: origin top-left
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
         glOrtho(0, w, h, 0, -1, 1)
@@ -104,7 +103,6 @@ class GLCanvas(QOpenGLWidget):
         glClear(GL_COLOR_BUFFER_BIT)
         glLoadIdentity()
 
-        # Draw filled spans (if available)
         if self.filled_spans:
             r, g, b, a = self.fill_color.redF(), self.fill_color.greenF(), self.fill_color.blueF(), self.fill_color.alphaF()
             glColor4f(r, g, b, a)
@@ -115,7 +113,6 @@ class GLCanvas(QOpenGLWidget):
                 glVertex2f(x2, float(y) + 0.5)
             glEnd()
 
-        # Draw polygon outline
         if len(self.points) >= 2:
             glColor4f(self.stroke_color.redF(), self.stroke_color.greenF(), self.stroke_color.blueF(), 1.0)
             glLineWidth(float(self.stroke_width))
@@ -124,18 +121,18 @@ class GLCanvas(QOpenGLWidget):
                 for p in self.points:
                     glVertex2f(p.x(), p.y())
             else:
-                # draw path as segments in input order
+
                 for i in range(len(self.points) - 1):
                     p1, p2 = self.points[i], self.points[i + 1]
                     glVertex2f(p1.x(), p1.y())
                     glVertex2f(p2.x(), p2.y())
             glEnd()
 
-        # Draw vertices and hover preview
+
         if self.show_vertices and self.points:
             glPointSize(6)
             glColor4f(0.1, 0.1, 0.1, 1.0)
-            glBegin(GL_LINES)  # we will draw little crosses using lines for each vertex
+            glBegin(GL_LINES)
             s = 4
             for p in self.points:
                 x, y = p.x(), p.y()
@@ -146,7 +143,7 @@ class GLCanvas(QOpenGLWidget):
             glEnd()
 
         if self.hover_pos and (not self.closed) and self.points:
-            # Preview segment from last point to cursor
+
             glColor4f(0.15, 0.15, 0.15, 0.35)
             glLineWidth(1.0)
             glBegin(GL_LINES)
@@ -155,7 +152,7 @@ class GLCanvas(QOpenGLWidget):
             glVertex2f(self.hover_pos.x(), self.hover_pos.y())
             glEnd()
 
-    # ---------- Interaction ----------
+    # ---------- Interacao ----------
     def mousePressEvent(self, event):
         """ 
         Gerencia cliques do mouse: 
@@ -168,7 +165,7 @@ class GLCanvas(QOpenGLWidget):
             self.filled_spans.clear()
             self.update()
         elif event.button() == Qt.MouseButton.RightButton:
-            # right-click toggles vertex display for clarity
+
             self.show_vertices = not self.show_vertices
             self.update()
 
@@ -180,7 +177,7 @@ class GLCanvas(QOpenGLWidget):
         self.hover_pos = QPointF(event.position().x(), event.position().y())
         self.update()
 
-    # ---------- Public operations ----------
+    # ---------- Operacoes ----------
     def set_stroke_width(self, w: int):
         """ 
         Ajusta a espessura do traço do polígono. 
@@ -231,7 +228,7 @@ class GLCanvas(QOpenGLWidget):
         self.filled_spans = spans
         self.update()
 
-    # ---------- ET / AET implementation ----------
+    # ---------- ET / AET ----------
     @staticmethod
     def build_edge_table(vertices: List[Tuple[float, float]], height: int) -> List[List[Edge]]:
         """ 
@@ -250,12 +247,10 @@ class GLCanvas(QOpenGLWidget):
         n = len(vertices)
         ET: List[List[Edge]] = [[] for _ in range(height + 1)]
 
-        # iterate over edges (v_i, v_{i+1})
         for i in range(n):
             x1, y1 = vertices[i]
             x2, y2 = vertices[(i + 1) % n]
 
-            # Ignore horizontal edges
             if int(round(y1)) == int(round(y2)):
                 continue
 
@@ -272,14 +267,10 @@ class GLCanvas(QOpenGLWidget):
 
             inv_slope = dx / dy  # 1/m
 
-            # Ceiling of ymin as first scanline
             y_start = int(max(0, int(round(min(ymin, height)))))
-            y_end = int(min(height, int(round(max(0, ymax) - 1))))  # ymax is exclusive
+            y_end = int(min(height, int(round(max(0, ymax) - 1))))  
 
-            # Compute x at the first scanline (y = y_start)
-            # Adjust x to the precise intersection with the first integer scanline
             if dy != 0:
-                # Move from ymin to y_start
                 y_offset = (y_start + 0.0) - ymin
                 x_int = x_at_ymin + inv_slope * y_offset
             else:
@@ -309,16 +300,14 @@ class GLCanvas(QOpenGLWidget):
         spans: List[Tuple[int, float, float]] = []
 
         for y in range(0, height + 1):
-            # Add edges starting at this scanline
+
             for e in ET[y]:
                 AET.append(e)
-            # Remove edges for which y > ymax
+
             AET = [e for e in AET if y <= e.ymax]
 
-            # Sort AET by current x, then by inv_slope
             AET.sort(key=lambda e: (e.x, e.inv_slope))
 
-            # Pair up intersections to generate spans
             it = iter(AET)
             pairs = []
             try:
@@ -337,13 +326,12 @@ class GLCanvas(QOpenGLWidget):
                 if x_right - x_left > 1e-6:
                     spans.append((y, x_left, x_right))
 
-            # Increment x for each active edge
             for e in AET:
                 e.x += e.inv_slope
 
         return spans
 
-    # ---------- Example polygons ----------
+    # ---------- Poligonos de Exemplo ----------
     def load_example(self, name: str):
         """ 
         Carrega polígonos de exemplo predefinidos (convexo, côncavo, etc.) 
