@@ -498,3 +498,28 @@ class OpenGLWidget(QOpenGLWidget):
         delta = event.angleDelta().y()
         self.scene.camera.zoom(delta)
         self.update()
+
+    def reset_opengl_state(self):
+        """
+        Reseta o estado do OpenGL para padrões seguros.
+        
+        Útil ao alternar entre modos de renderização.
+        """
+        self.makeCurrent()
+        
+        # Desativar todos os shaders
+        glUseProgram(0)
+        
+        # Restaurar shading model padrão
+        glShadeModel(GL_SMOOTH)
+        
+        # Garantir que iluminação está habilitada
+        glEnable(GL_LIGHTING)
+        glEnable(GL_LIGHT0)
+        
+        # Reconfigurar luz e material
+        self.scene.light.apply_fixed_pipeline()
+        self.scene.material.apply_fixed_pipeline()
+        
+        # Forçar atualização
+        self.update()

@@ -21,7 +21,7 @@ class Material:
         self.ambient = [0.2, 0.2, 0.2]
         self.diffuse = [0.8, 0.8, 0.8]
         self.specular = [1.0, 1.0, 1.0]
-        self.shininess = 50.0
+        self.shininess = 16.0
     
     def apply_fixed_pipeline(self):
         """

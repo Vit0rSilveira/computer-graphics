@@ -3,7 +3,7 @@ Sistema de Visualização 3D com Modelos de Iluminação
 Trabalho 2 - SCC 250 - Computação Gráfica
 
 Este programa implementa um visualizador 3D interativo que permite:
-- Visualizar objetos 3D (cubo, pirâmide, cilindro, esfera)
+- Visualizar objetos 3D (cubo, pirâmide, cone, esfera)
 - Aplicar diferentes modelos de iluminação (Flat, Gouraud, Phong)
 - Alternar entre projeções perspectiva e ortográfica
 - Comparar os 3 modelos de iluminação lado a lado
@@ -50,7 +50,7 @@ class OpenGLWidget(QOpenGLWidget):
         camera_angle_y (float): Ângulo horizontal da câmera (em graus)
         shading_model (str): Modelo de iluminação atual ('flat', 'gouraud', 'phong')
         light_pos (list): Posição da luz [x, y, z, w] onde w=1 para luz posicional
-        object_type (str): Tipo de objeto a renderizar ('cube', 'pyramid', 'cylinder', 'sphere')
+        object_type (str): Tipo de objeto a renderizar ('cube', 'pyramid', 'cone', 'sphere')
         projection_type (str): Tipo de projeção ('perspective', 'orthographic')
         comparison_mode (bool): Se True, mostra 3 objetos com diferentes iluminações
         animate (bool): Se True, anima a rotação do objeto
@@ -81,7 +81,7 @@ class OpenGLWidget(QOpenGLWidget):
         # Configurações de iluminação
         self.shading_model = 'gouraud'  # flat, gouraud, phong
         self.light_pos = [3.0, 3.0, 3.0, 1.0]
-        self.object_type = 'cube'  # cube, pyramid, cylinder, sphere
+        self.object_type = 'cube'  # cube, pyramid, cone, sphere
         self.projection_type = 'perspective'  # perspective, orthographic
         self.comparison_mode = False  # Modo de comparação lado a lado
         
@@ -385,11 +385,11 @@ class OpenGLWidget(QOpenGLWidget):
             glVertex3fv(vertex)
         glEnd()
         
-    def draw_cylinder(self):
+    def draw_cone(self):
         """
-        Desenha um cilindro usando primitivas GLU (OpenGL Utility Library).
+        Desenha um cone usando primitivas GLU (OpenGL Utility Library).
         
-        O cilindro consiste em:
+        O cone consiste em:
         - Corpo cilíndrico: raio 1, altura 2, 32 subdivisões
         - Tampa inferior: disco com raio 1
         - Tampa superior: disco com raio 1
@@ -404,8 +404,8 @@ class OpenGLWidget(QOpenGLWidget):
         glPushMatrix()
         glTranslatef(0, -1, 0)
         
-        # Corpo do cilindro
-        gluCylinder(quadric, 1.0, 1.0, 2.0, 32, 32)
+        # Corpo do cone
+        gluCone(quadric, 1.0, 1.0, 2.0, 32, 32)
         
         # Tampa inferior
         glPushMatrix()
@@ -448,8 +448,8 @@ class OpenGLWidget(QOpenGLWidget):
             self.draw_cube()
         elif self.object_type == 'pyramid':
             self.draw_pyramid()
-        elif self.object_type == 'cylinder':
-            self.draw_cylinder()
+        elif self.object_type == 'cone':
+            self.draw_cone()
         elif self.object_type == 'sphere':
             self.draw_sphere()
     
@@ -662,7 +662,7 @@ class MainWindow(QMainWindow):
             
         O painel inclui grupos organizados de controles:
         1. Informações e instruções de uso
-        2. Seleção de objeto (cubo, pirâmide, cilindro, esfera)
+        2. Seleção de objeto (cubo, pirâmide, cone, esfera)
         3. Modelo de iluminação (Flat, Gouraud, Phong)
         4. Botão de modo comparação
         5. Tipo de projeção (perspectiva/ortográfica)
@@ -692,7 +692,7 @@ class MainWindow(QMainWindow):
         object_layout = QVBoxLayout()
         
         self.object_combo = QComboBox()
-        self.object_combo.addItems(['Cubo', 'Pirâmide', 'Cilindro', 'Esfera'])
+        self.object_combo.addItems(['Cubo', 'Pirâmide', 'cone', 'Esfera'])
         self.object_combo.currentTextChanged.connect(self.change_object)
         object_layout.addWidget(QLabel("Tipo:"))
         object_layout.addWidget(self.object_combo)
@@ -849,13 +849,13 @@ class MainWindow(QMainWindow):
         Altera o tipo de objeto a ser renderizado.
         
         Args:
-            text (str): Nome do objeto em português ('Cubo', 'Pirâmide', 'Cilindro', 'Esfera')
+            text (str): Nome do objeto em português ('Cubo', 'Pirâmide', 'cone', 'Esfera')
             
         Converte o texto da interface para o identificador interno
         e atualiza o widget OpenGL.
         """
         obj_map = {'Cubo': 'cube', 'Pirâmide': 'pyramid', 
-                   'Cilindro': 'cylinder', 'Esfera': 'sphere'}
+                   'Cone': 'cone', 'Esfera': 'sphere'}
         self.gl_widget.object_type = obj_map[text]
         self.gl_widget.update()
     

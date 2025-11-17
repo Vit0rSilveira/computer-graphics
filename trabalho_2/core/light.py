@@ -25,7 +25,7 @@ class Light:
             position (Vector3D, optional): Posição inicial da luz
         """
         self.position = position if position else Vector3D(3.0, 3.0, 3.0)
-        self.ambient = [0.3, 0.3, 0.3]
+        self.ambient = [0.2, 0.2, 0.2]
         self.diffuse = [0.8, 0.8, 0.8]
         self.specular = [1.0, 1.0, 1.0]
     

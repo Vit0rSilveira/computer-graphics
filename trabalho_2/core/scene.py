@@ -7,7 +7,7 @@ from core.light import Light
 from core.material import Material
 from geometry.cube import Cube
 from geometry.pyramid import Pyramid
-from geometry.cylinder import Cylinder
+from geometry.cone import Cone
 from geometry.sphere import Sphere
 from shading.flat_shading import FlatShading
 from shading.gouraud_shading import GouraudShading
@@ -41,7 +41,7 @@ class Scene3D:
         self.objects = {
             'cube': Cube(),
             'pyramid': Pyramid(),
-            'cylinder': Cylinder(),
+            'cone': Cone(),
             'sphere': Sphere()
         }
         

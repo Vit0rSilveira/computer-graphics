@@ -11,7 +11,7 @@
 
 ### Aluno 1: [Nome do Aluno 1]
 **Responsabilidades:**
-- Implementação dos modelos de geometria 3D (Cubo, Pirâmide, Cilindro, Esfera)
+- Implementação dos modelos de geometria 3D (Cubo, Pirâmide, Cone, Esfera)
 - Desenvolvimento da estrutura de classes base (Vector3D, Geometry3D)
 - Implementação dos modelos Flat e Gouraud Shading
 - Testes e validação dos objetos geométricos
@@ -69,7 +69,7 @@ trabalho_2/
     ├── geometry3d.py         # Classe base abstrata
     ├── cube.py               # Cubo
     ├── pyramid.py            # Pirâmide
-    ├── cylinder.py           # Cilindro
+    ├── cone.py               # Cone
     └── sphere.py             # Esfera
 ```
 
@@ -177,14 +177,14 @@ v2 = p3 - p1
 normal = v1.cross(v2).normalize()
 ```
 
-#### 4.2.3 Cilindro (`geometry/cylinder.py`)
-Cilindro gerado usando GLU Quadrics.
+#### 4.2.3 Cone (`geometry/cone.py`)
+Cone gerado usando GLU Quadrics.
 
 **Implementação:**
 - Raio: 1.0 unidade
 - Altura: 2.0 unidades
 - 32 subdivisões circunferenciais
-- Corpo: gluCylinder()
+- Corpo: gluCone()
 - Tampas: gluDisk() (superior e inferior)
 - Normais geradas automaticamente (GLU_SMOOTH)
 
@@ -386,7 +386,7 @@ A interface foi dividida em duas áreas principais:
 ### 8.2 Controles Disponíveis
 
 #### Seleção de Objeto
-- ComboBox com 4 opções: Cubo, Pirâmide, Cilindro, Esfera
+- ComboBox com 4 opções: Cubo, Pirâmide, Cone, Esfera
 
 #### Modelo de Iluminação
 - ComboBox com 3 opções: Flat, Gouraud, Phong
@@ -513,7 +513,7 @@ normal_matrix = np.linalg.inv(model_matrix[:3, :3]).T
 
 ### 11.1 Funcionalidades Implementadas
 
-✅ 4 tipos de objetos 3D (Cubo, Pirâmide, Cilindro, Esfera)  
+✅ 4 tipos de objetos 3D (Cubo, Pirâmide, Cone, Esfera)  
 ✅ 3 modelos de iluminação (Flat, Gouraud, Phong com shaders)  
 ✅ 2 tipos de projeção (Perspectiva, Ortográfica)  
 ✅ Transformações geométricas completas (Rotação, Escala, Translação)  
@@ -584,7 +584,7 @@ normal_matrix = np.linalg.inv(model_matrix[:3, :3]).T
 
 **Resultado:** Cada face triangular com cor uniforme, ideal para visualizar a geometria angular da pirâmide.
 
-### 12.4 Exemplo 4: Cilindro com Diferentes Posições de Luz
+### 12.4 Exemplo 4: Cone com Diferentes Posições de Luz
 
 **Teste realizado:**
 - Luz inicial: (3.0, 3.0, 3.0)

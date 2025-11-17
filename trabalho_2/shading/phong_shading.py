@@ -227,8 +227,8 @@ class PhongShading(ShadingModel):
         mat_spec_loc = glGetUniformLocation(self.shader_program, "material_specular")
         mat_shin_loc = glGetUniformLocation(self.shader_program, "material_shininess")
         
-        # Componente ambiente: 30% da cor
-        ambient_color = [c * 0.3 for c in color_rgb]
+        # Componente ambiente: 50% da cor (aumentado)
+        ambient_color = [c * 0.4 for c in color_rgb]
         glUniform3f(mat_amb_loc, ambient_color[0], ambient_color[1], ambient_color[2])
         
         # Componente difusa: cor completa
@@ -246,12 +246,6 @@ class PhongShading(ShadingModel):
         
         view_pos_loc = glGetUniformLocation(self.shader_program, "view_position")
         glUniform3f(view_pos_loc, camera_pos.x, camera_pos.y, camera_pos.z)
-        
-        # Debug: imprimir valores
-        print(f"DEBUG Phong:")
-        print(f"  Cor do objeto: {color_rgb}")
-        print(f"  Luz posição: ({light.position.x:.1f}, {light.position.y:.1f}, {light.position.z:.1f})")
-        print(f"  Câmera posição: ({camera_pos.x:.1f}, {camera_pos.y:.1f}, {camera_pos.z:.1f})")
     
     def cleanup(self):
         """Libera recursos dos shaders."""

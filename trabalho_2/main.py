@@ -29,7 +29,7 @@ trabalho_2/
     ├── geometry3d.py          # Classe base Geometry3D
     ├── cube.py                # Cubo
     ├── pyramid.py             # Pirâmide
-    ├── cylinder.py            # Cilindro
+    ├── cone.py                # Cone
     └── sphere.py              # Esfera
 
 Requisitos:

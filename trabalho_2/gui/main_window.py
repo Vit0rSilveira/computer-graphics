@@ -69,7 +69,7 @@ class MainWindow(QMainWindow):
             
         O painel inclui grupos organizados de controles:
         1. Informações e instruções de uso
-        2. Seleção de objeto (cubo, pirâmide, cilindro, esfera)
+        2. Seleção de objeto (cubo, pirâmide, Cone, esfera)
         3. Modelo de iluminação (Flat, Gouraud, Phong)
         4. Botão de modo comparação
         5. Tipo de projeção (perspectiva/ortográfica)
@@ -98,7 +98,7 @@ class MainWindow(QMainWindow):
         object_layout = QVBoxLayout()
         
         self.object_combo = QComboBox()
-        self.object_combo.addItems(['Cubo', 'Pirâmide', 'Cilindro', 'Esfera'])
+        self.object_combo.addItems(['Cubo', 'Pirâmide', 'Cone', 'Esfera'])
         self.object_combo.currentTextChanged.connect(self.change_object)
         object_layout.addWidget(QLabel("Tipo:"))
         object_layout.addWidget(self.object_combo)
@@ -277,7 +277,7 @@ class MainWindow(QMainWindow):
         Altera o tipo de objeto a ser renderizado.
         
         Args:
-            text (str): Nome do objeto em português ('Cubo', 'Pirâmide', 'Cilindro', 'Esfera')
+            text (str): Nome do objeto em português ('Cubo', 'Pirâmide', 'Cone', 'Esfera')
             
         Converte o texto da interface para o identificador interno
         e atualiza o widget OpenGL.
@@ -285,7 +285,7 @@ class MainWindow(QMainWindow):
         obj_map = {
             'Cubo': 'cube', 
             'Pirâmide': 'pyramid', 
-            'Cilindro': 'cylinder', 
+            'Cone': 'cone', 
             'Esfera': 'sphere'
         }
         self.gl_widget.scene.current_object = obj_map[text]
@@ -497,5 +497,9 @@ class MainWindow(QMainWindow):
             self.gl_widget.scene.camera.distance = 8.0
             self.comparison_btn.setText("🔀 Modo Comparação")
             self.shading_combo.setEnabled(True)
-        
+
+            self.gl_widget.reset_opengl_state()
+
         self.gl_widget.update()
+
+    
