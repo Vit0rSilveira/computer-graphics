@@ -22,7 +22,6 @@ class MainWindow(QMainWindow):
     
     Attributes:
         gl_widget (OpenGLWidget): Widget de renderização OpenGL
-        comparison_btn (QPushButton): Botão para alternar modo comparação
         object_combo (QComboBox): Seletor de tipo de objeto
         shading_combo (QComboBox): Seletor de modelo de iluminação
         projection_combo (QComboBox): Seletor de tipo de projeção
@@ -68,12 +67,11 @@ class MainWindow(QMainWindow):
         1. Informações e instruções de uso
         2. Seleção de objeto (cubo, pirâmide, Cone, esfera)
         3. Modelo de iluminação (Flat, Gouraud, Phong)
-        4. Botão de modo comparação
-        5. Tipo de projeção (perspectiva/ortográfica)
-        6. Controles de rotação (X, Y, Z) com sliders
-        7. Controle de escala
-        8. Controles de posição da luz (X, Y, Z)
-        9. Botões de ação (animar, resetar)
+        4. Tipo de projeção (perspectiva/ortográfica)
+        5. Controles de rotação (X, Y, Z) com sliders
+        6. Controle de escala
+        7. Controles de posição da luz (X, Y, Z)
+        8. Botões de ação (animar, resetar)
         """
         panel = QWidget()
         layout = QVBoxLayout(panel)
@@ -121,28 +119,7 @@ class MainWindow(QMainWindow):
         
         lighting_group.setLayout(lighting_layout)
         layout.addWidget(lighting_group)
-        
-        # BOTÃO: MODO COMPARAÇÃO
-        comparison_btn = QPushButton("🔀 Modo Comparação")
-        comparison_btn.setCheckable(True)
-        comparison_btn.clicked.connect(self.toggle_comparison_mode)
-        comparison_btn.setStyleSheet("""
-            QPushButton {
-                padding: 8px;
-                font-weight: bold;
-                background-color: #2a5a8a;
-                color: white;
-                border-radius: 4px;
-            }
-            QPushButton:checked {
-                background-color: #3a7abd;
-            }
-            QPushButton:hover {
-                background-color: #356a9a;
-            }
-        """)
-        layout.addWidget(comparison_btn)
-        self.comparison_btn = comparison_btn
+    
         
         # GRUPO: TIPO DE PROJEÇÃO
         projection_group = QGroupBox("Projeção")
@@ -459,41 +436,6 @@ class MainWindow(QMainWindow):
         self.rot_z_slider.setValue(0)
         self.scale_slider.setValue(100)
         
-        self.gl_widget.update()
-    
-    def toggle_comparison_mode(self, checked):
-        """
-        Alterna entre modo normal e modo comparação lado a lado.
-        
-        Args:
-            checked (bool): True se o botão está pressionado (modo comparação ativo)
-            
-        No modo comparação:
-        - Desenha 3 objetos com diferentes modelos de iluminação
-        - Câmera se afasta para mostrar os 3 objetos
-        - Seletor de modelo de iluminação é desabilitado
-        - Botão mostra checkmark (✓)
-        
-        No modo normal:
-        - Desenha um único objeto
-        - Câmera volta à distância padrão
-        - Seletor de modelo de iluminação é habilitado
-        """
-        self.gl_widget.comparison_mode = checked
-        
-        if checked:
-            # Ajustar câmera para visualização melhor dos 3 objetos
-            self.gl_widget.scene.camera.distance = 12.0
-            self.comparison_btn.setText("🔀 Modo Comparação ✓")
-            self.shading_combo.setEnabled(False)
-        else:
-            # Voltar para distância normal
-            self.gl_widget.scene.camera.distance = 8.0
-            self.comparison_btn.setText("🔀 Modo Comparação")
-            self.shading_combo.setEnabled(True)
-
-            self.gl_widget.reset_opengl_state()
-
         self.gl_widget.update()
 
     

@@ -35,8 +35,7 @@ O objetivo deste trabalho é desenvolver um sistema interativo de visualização
 1. **Manipular objetos tridimensionais** através de transformações geométricas (rotação, escala, translação)
 2. **Alternar entre projeções** perspectiva e ortográfica
 3. **Aplicar três modelos de iluminação** distintos (Flat, Gouraud e Phong)
-4. **Comparar visualmente** os três modelos de iluminação lado a lado
-5. **Controlar interativamente** parâmetros de cena, luz e objetos
+4. **Controlar interativamente** parâmetros de cena, luz e objetos
 
 O trabalho visa demonstrar na prática os conceitos teóricos de computação gráfica 3D, especialmente os diferentes algoritmos de iluminação e sombreamento.
 
@@ -337,8 +336,6 @@ glScalef(factor, factor, factor)  # Escala uniforme
 glTranslatef(tx, ty, tz)
 ```
 
-Utilizada principalmente para posicionar objetos no modo comparação.
-
 ---
 
 ## 7. Projeções
@@ -391,11 +388,6 @@ A interface foi dividida em duas áreas principais:
 #### Modelo de Iluminação
 - ComboBox com 3 opções: Flat, Gouraud, Phong
 
-#### Modo Comparação
-- Botão toggle que alterna entre:
-  - **Modo Normal**: Um objeto com modelo selecionado
-  - **Modo Comparação**: Três objetos lado a lado (Flat, Gouraud, Phong)
-
 #### Projeção
 - ComboBox: Perspectiva / Ortográfica
 
@@ -434,6 +426,7 @@ A interface foi dividida em duas áreas principais:
 ### 9.1 Funcionalidade
 
 O modo comparação é um recurso especial que permite visualizar simultaneamente os três modelos de iluminação aplicados ao mesmo objeto.
+Não foi possível implementar devido a erros ao renderizar as 3 imagens lado a lado. Abaixo segue a ideia geral do modo
 
 ### 9.2 Implementação
 
@@ -499,14 +492,6 @@ O modo comparação permite observar claramente as diferenças:
 normal_matrix = np.linalg.inv(model_matrix[:3, :3]).T
 ```
 
-### 10.4 Problema: Grid Não Aparecia no Modo Comparação
-
-**Causa:**
-- Método `draw_grid()` não era chamado em `draw_comparison_view()`
-
-**Solução:**
-- Adicionar chamadas para `draw_grid()` e `draw_axes()` no início do método
-
 ---
 
 ## 11. Resultados Obtidos
@@ -519,7 +504,6 @@ normal_matrix = np.linalg.inv(model_matrix[:3, :3]).T
 ✅ Transformações geométricas completas (Rotação, Escala, Translação)  
 ✅ Controle interativo de luz  
 ✅ Câmera orbital com mouse  
-✅ Modo de comparação visual  
 ✅ Animação automática  
 ✅ Interface gráfica intuitiva  
 
@@ -563,19 +547,7 @@ normal_matrix = np.linalg.inv(model_matrix[:3, :3]).T
 
 **Resultado:** Highlights especulares nítidos nas arestas superiores, transições suaves entre faces, aparência realista de material plástico.
 
-### 12.2 Exemplo 2: Esfera em Modo Comparação
-
-**Configuração:**
-- Objeto: Esfera
-- Modo: Comparação
-- Projeção: Perspectiva
-
-**Observações:**
-- **Flat**: Esfera aparece como poliedro (faces visíveis)
-- **Gouraud**: Esfera suave, mas highlight se espalha demais
-- **Phong**: Esfera perfeitamente suave com highlight concentrado
-
-### 12.3 Exemplo 3: Pirâmide com Flat
+### 12.2 Exemplo 3: Pirâmide com Flat
 
 **Configuração:**
 - Objeto: Pirâmide
@@ -717,7 +689,6 @@ python main.py
 | Zoom | Scroll do mouse |
 | Resetar | Botão "Resetar Vista" |
 | Animar | Botão "Animar Rotação" |
-| Comparar | Botão "Modo Comparação" |
 
 ### Anexo E: Troubleshooting
 

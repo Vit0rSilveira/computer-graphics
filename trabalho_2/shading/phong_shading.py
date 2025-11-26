@@ -170,64 +170,58 @@ class PhongShading(ShadingModel):
         """
         if not self.shader_program:
             return
-        
-        # ====================================================================
-        # MATRIZES DE TRANSFORMAÇÃO
-        # ====================================================================
-        
+
+        # Garante que model e view são 4x4 em float32 (row-major)
+        model = np.array(model_matrix, dtype=np.float32).reshape((4, 4))
+        view = np.array(view_matrix, dtype=np.float32).reshape((4, 4))
+        proj = np.array(proj_matrix, dtype=np.float32)
+
+        # Uniforms de transformação
         model_loc = glGetUniformLocation(self.shader_program, "model_matrix")
         view_loc = glGetUniformLocation(self.shader_program, "view_matrix")
         proj_loc = glGetUniformLocation(self.shader_program, "projection_matrix")
-        
-        glUniformMatrix4fv(model_loc, 1, GL_FALSE, model_matrix)
-        glUniformMatrix4fv(view_loc, 1, GL_FALSE, view_matrix)
-        glUniformMatrix4fv(proj_loc, 1, GL_FALSE, proj_matrix)
-        
-        # Matriz de normais
+
+        # OpenGL espera coluna-major → mandamos a transposta
+        glUniformMatrix4fv(model_loc, 1, GL_FALSE, model.T)
+        glUniformMatrix4fv(view_loc, 1, GL_FALSE, view.T)
+        glUniformMatrix4fv(proj_loc, 1, GL_FALSE, proj)
+
+        # Matriz de normais (apenas parte 3x3 do modelo)
         try:
-            normal_matrix = np.linalg.inv(model_matrix[:3, :3]).T
-            normal_matrix = normal_matrix.astype(np.float32)
-        except:
+            normal_matrix = np.linalg.inv(model[:3, :3]).T.astype(np.float32)
+        except Exception:
             normal_matrix = np.identity(3, dtype=np.float32)
-        
+
         normal_loc = glGetUniformLocation(self.shader_program, "normal_matrix")
-        glUniformMatrix3fv(normal_loc, 1, GL_FALSE, normal_matrix)
-        
+        glUniformMatrix3fv(normal_loc, 1, GL_FALSE, normal_matrix.T)
+
         # PROPRIEDADES DA LUZ
         light_pos_loc = glGetUniformLocation(self.shader_program, "light_position")
         light_amb_loc = glGetUniformLocation(self.shader_program, "light_ambient")
         light_diff_loc = glGetUniformLocation(self.shader_program, "light_diffuse")
         light_spec_loc = glGetUniformLocation(self.shader_program, "light_specular")
-        
+
         glUniform3f(light_pos_loc, light.position.x, light.position.y, light.position.z)
         glUniform3fv(light_amb_loc, 1, light.ambient)
         glUniform3fv(light_diff_loc, 1, light.diffuse)
         glUniform3fv(light_spec_loc, 1, light.specular)
-        
-        # PROPRIEDADES DO MATERIAL - USAR COR DO OPENGL
-        # Pegar cor atual do OpenGL (glColor)
+
+        # PROPRIEDADES DO MATERIAL (usando a cor corrente do OpenGL)
         current_color = glGetFloatv(GL_CURRENT_COLOR)
         color_rgb = [current_color[0], current_color[1], current_color[2]]
-        
+
         mat_amb_loc = glGetUniformLocation(self.shader_program, "material_ambient")
         mat_diff_loc = glGetUniformLocation(self.shader_program, "material_diffuse")
         mat_spec_loc = glGetUniformLocation(self.shader_program, "material_specular")
         mat_shin_loc = glGetUniformLocation(self.shader_program, "material_shininess")
-        
-        # Componente ambiente: 50% da cor (aumentado)
+
         ambient_color = [c * 0.4 for c in color_rgb]
-        glUniform3f(mat_amb_loc, ambient_color[0], ambient_color[1], ambient_color[2])
-        
-        # Componente difusa: cor completa
-        glUniform3f(mat_diff_loc, color_rgb[0], color_rgb[1], color_rgb[2])
-        
-        # Componente especular: branco
+        glUniform3f(mat_amb_loc, *ambient_color)
+        glUniform3f(mat_diff_loc, *color_rgb)
         glUniform3f(mat_spec_loc, 1.0, 1.0, 1.0)
-        
-        # Brilho
         glUniform1f(mat_shin_loc, material.shininess)
-        
-        # POSIÇÃO DA CÂMERA
+
+        # POSIÇÃO DA CÂMERA (em coordenadas de mundo)
         view_pos_loc = glGetUniformLocation(self.shader_program, "view_position")
         glUniform3f(view_pos_loc, camera_pos.x, camera_pos.y, camera_pos.z)
     

@@ -27,7 +27,6 @@ class OpenGLWidget(QOpenGLWidget):
         scale_factor (float): Escala do objeto (1.0 = tamanho normal)
         translation_x, translation_y, translation_z (float): Translação do objeto
         projection_type (str): Tipo de projeção ('perspective' ou 'orthographic')
-        comparison_mode (bool): Se True, mostra 3 objetos com diferentes iluminações
         animate (bool): Se True, anima a rotação do objeto
         timer (QTimer): Timer para animação
         last_pos (QPoint): Última posição do mouse (para controle de câmera)
@@ -62,7 +61,6 @@ class OpenGLWidget(QOpenGLWidget):
         
         # Configurações de visualização
         self.projection_type = 'perspective'
-        self.comparison_mode = False
         
         # Animação
         self.timer = QTimer()
@@ -117,12 +115,10 @@ class OpenGLWidget(QOpenGLWidget):
         # Ajustar distância da câmera para cada tipo de projeção
         if proj_type == 'orthographic':
             # Na ortográfica, aproximar mais para ver melhor
-            if not self.comparison_mode:
-                self.scene.camera.distance = 10.0
+            self.scene.camera.distance = 10.0
         else:
             # Na perspectiva, usar distância padrão
-            if not self.comparison_mode:
-                self.scene.camera.distance = 8.0
+            self.scene.camera.distance = 8.0
         
         # Reconfigurar matriz de projeção
         self.makeCurrent()
@@ -183,12 +179,8 @@ class OpenGLWidget(QOpenGLWidget):
         # IMPORTANTE: Habilitar iluminação para pipeline fixo
         glEnable(GL_LIGHTING)
         glEnable(GL_LIGHT0)
-        
-        # Renderizar baseado no modo
-        if self.comparison_mode:
-            self.draw_comparison_view()
-        else:
-            self.draw_normal_view()
+
+        self.draw_normal_view()
         
         # Desenhar visualização da fonte de luz
         self.draw_light_source()
@@ -234,54 +226,95 @@ class OpenGLWidget(QOpenGLWidget):
         
         glPopMatrix()
     
-    def draw_comparison_view(self):
-        """
-        Desenha três objetos lado a lado para comparar modelos de iluminação.
-        """
-        # Desenhar grade e eixos
-        self.draw_grid()
-        self.draw_axes()
-        
-        spacing = 3.5
-        positions = [-spacing, 0, spacing]
-        shading_keys = ['flat', 'gouraud', 'phong']
-        colors = [(0.9, 0.3, 0.3), (0.3, 0.9, 0.3), (0.3, 0.3, 0.9)]
-        
-        for i, (pos_x, shading_key, color) in enumerate(zip(positions, shading_keys, colors)):
-            glPushMatrix()
 
-            glTranslatef(self.translation_x, self.translation_y, self.translation_z)
-            
-            # Posicionar objeto
-            glTranslatef(pos_x, 0, 0)
-            glRotatef(self.rotation_x, 1, 0, 0)
-            glRotatef(self.rotation_y, 0, 1, 0)
-            glRotatef(self.rotation_z, 0, 0, 1)
-            glScalef(self.scale_factor * 0.8, self.scale_factor * 0.8, self.scale_factor * 0.8)
-            
-            # DEFINIR COR ANTES DE APLICAR O SHADER
-            glColor3f(*color)
-            
-            # Obter modelo de iluminação
-            shading = self.scene.get_shading(shading_key)
-            
-            # Se for Phong, configurar uniforms ANTES de aplicar
-            if isinstance(shading, PhongShading) and shading.shader_program:
-                shading.apply()
-                self._setup_phong_uniforms(shading)
-            else:
-                # Para Flat e Gouraud, apenas aplicar
-                shading.apply()
-            
-            # Desenhar objeto
-            self.scene.get_object().draw()
-            
-            # SEMPRE desativar shader após cada objeto
-            glUseProgram(0)
-            
-            glPopMatrix()
+    def _build_model_matrix(self, extra_translation=(0.0, 0.0, 0.0), extra_scale=1.0):
+        """
+        Constrói a matriz modelo (apenas transformações do objeto),
+        na mesma ordem dos glTranslatef/glRotatef/glScalef usados no desenho.
+        """
+        tx = self.translation_x + extra_translation[0]
+        ty = self.translation_y + extra_translation[1]
+        tz = self.translation_z + extra_translation[2]
+        s = self.scale_factor * extra_scale
+
+        rx = np.radians(self.rotation_x)
+        ry = np.radians(self.rotation_y)
+        rz = np.radians(self.rotation_z)
+
+        # Translação
+        T = np.array([
+            [1.0, 0.0, 0.0, tx],
+            [0.0, 1.0, 0.0, ty],
+            [0.0, 0.0, 1.0, tz],
+            [0.0, 0.0, 0.0, 1.0],
+        ], dtype=np.float32)
+
+        # Rotações (X depois Y depois Z — mesma ordem do código OpenGL)
+        cx, sx = np.cos(rx), np.sin(rx)
+        cy, sy = np.cos(ry), np.sin(ry)
+        cz, sz = np.cos(rz), np.sin(rz)
+
+        Rx = np.array([
+            [1.0, 0.0, 0.0, 0.0],
+            [0.0, cx, -sx, 0.0],
+            [0.0, sx,  cx, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ], dtype=np.float32)
+
+        Ry = np.array([
+            [ cy, 0.0, sy, 0.0],
+            [0.0, 1.0, 0.0, 0.0],
+            [-sy, 0.0, cy, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ], dtype=np.float32)
+
+        Rz = np.array([
+            [cz, -sz, 0.0, 0.0],
+            [sz,  cz, 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ], dtype=np.float32)
+
+        # Escala uniforme
+        S = np.array([
+            [s,   0.0, 0.0, 0.0],
+            [0.0, s,   0.0, 0.0],
+            [0.0, 0.0, s,   0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ], dtype=np.float32)
+
+        # Mesma composição que no OpenGL (T * Rx * Ry * Rz * S)
+        return T @ Rx @ Ry @ Rz @ S
+
+    def _build_view_matrix(self):
+        """
+        Constrói a matriz de visualização (view) equivalente ao gluLookAt da câmera orbital.
+        """
+        cam_pos = self.scene.camera.get_position()
+        eye = np.array([cam_pos.x, cam_pos.y, cam_pos.z], dtype=np.float32)
+        center = np.array([0.0, 0.0, 0.0], dtype=np.float32)
+        up = np.array([0.0, 1.0, 0.0], dtype=np.float32)
+
+        f = center - eye
+        f = f / np.linalg.norm(f)
+        u = up / np.linalg.norm(up)
+        s = np.cross(f, u)
+        s = s / np.linalg.norm(s)
+        u = np.cross(s, f)
+
+        view = np.identity(4, dtype=np.float32)
+        view[0, 0:3] = s
+        view[1, 0:3] = u
+        view[2, 0:3] = -f
+        view[0, 3] = -np.dot(s, eye)
+        view[1, 3] = -np.dot(u, eye)
+        view[2, 3] =  np.dot(f, eye)
+        return view
+
     
-    def _setup_phong_uniforms(self, phong_shading):
+    def _setup_phong_uniforms(self, phong_shading,
+                              extra_translation=(0.0, 0.0, 0.0),
+                              extra_scale=1.0):
         """
         Configura as variáveis uniform para os shaders do Phong.
         
@@ -291,15 +324,19 @@ class OpenGLWidget(QOpenGLWidget):
         Args:
             phong_shading (PhongShading): Instância do modelo Phong
         """
-        # Obter matrizes do OpenGL
-        model_matrix = np.array(glGetFloatv(GL_MODELVIEW_MATRIX), dtype=np.float32)
-        view_matrix = np.identity(4, dtype=np.float32)  # Já aplicada em modelview
+        # Matriz modelo: transformações do objeto no mundo
+        model_matrix = self._build_model_matrix(extra_translation, extra_scale)
+
+        # Matriz de visualização da câmera
+        view_matrix = self._build_view_matrix()
+
+        # Matriz de projeção atual
         proj_matrix = np.array(glGetFloatv(GL_PROJECTION_MATRIX), dtype=np.float32)
-        
-        # Posição da câmera no espaço mundo
+
+        # Posição da câmera em mundo
         camera_pos = self.scene.camera.get_position()
-        
-        # Configurar todos os uniforms do shader
+
+        # Configura todos os uniforms no shader
         phong_shading.set_uniforms(
             self.scene.light,
             self.scene.material,
@@ -396,50 +433,11 @@ class OpenGLWidget(QOpenGLWidget):
             event (QPaintEvent): Evento de pintura do Qt
             
         Chama o paintEvent do pai (que executa paintGL) e depois desenha
-        as legendas usando QPainter quando está no modo comparação.
+        as legendas usando QPainter quando está no .
         """
         super().paintEvent(event)
-        
-        # Desenhar legendas no modo comparação
-        if self.comparison_mode:
-            self.draw_labels()
-    
-    def draw_labels(self):
-        """
-        Desenha legendas identificando os modelos de iluminação (modo comparação).
-        
-        Usa QPainter para desenhar texto 2D sobre a renderização OpenGL.
-        Cada legenda inclui:
-        - Fundo arredondado semi-transparente
-        - Texto colorido correspondente ao objeto
-        - Posicionamento centralizado acima de cada objeto
-        """
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        
-        # Configurar fonte
-        font = QFont("Arial", 12, QFont.Weight.Bold)
-        painter.setFont(font)
-        
-        # Desenhar legendas
-        labels = ['FLAT SHADING', 'GOURAUD SHADING', 'PHONG SHADING']
-        colors = [QColor(230, 80, 80), QColor(80, 230, 80), QColor(80, 80, 230)]
-        
-        for i, (label, color) in enumerate(zip(labels, colors)):
-            x_pos = int((i + 0.5) * self.width() / 3)
-            y_pos = 40
-            
-            # Desenhar fundo
-            painter.setPen(Qt.PenStyle.NoPen)
-            painter.setBrush(QColor(20, 20, 30, 200))
-            painter.drawRoundedRect(x_pos - 75, y_pos - 15, 150, 35, 5, 5)
-            
-            # Desenhar texto
-            painter.setPen(color)
-            painter.drawText(x_pos - 70, y_pos - 15, 140, 35, 
-                           Qt.AlignmentFlag.AlignCenter, label)
-        
-        painter.end()
+
+
 
 
     # EVENTOS DE TECLADO (TRANSLACAO DO OBJETO)
