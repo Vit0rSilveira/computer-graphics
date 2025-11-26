@@ -40,7 +40,7 @@ class MainWindow(QMainWindow):
         constrói o painel de controle e estabelece as dimensões da janela.
         """
         super().__init__()
-        self.setWindowTitle("Trabalho 2 - Computação Gráfica 3D com Iluminação (Phong Implementado)")
+        self.setWindowTitle("Trabalho 2 - Computação Gráfica 3D com Iluminação")
         self.setGeometry(100, 100, 1400, 900)
         
         # Widget central
@@ -50,6 +50,7 @@ class MainWindow(QMainWindow):
         
         # OpenGL Widget (75% da largura)
         self.gl_widget = OpenGLWidget()
+        self.gl_widget.setFocus() 
         main_layout.addWidget(self.gl_widget, 3)
         
         # Painel de controle (25% da largura)
@@ -77,14 +78,24 @@ class MainWindow(QMainWindow):
         panel = QWidget()
         layout = QVBoxLayout(panel)
         
+        # Título
         title = QLabel("Controles 3D")
         title.setStyleSheet("font-size: 16px; font-weight: bold;")
         layout.addWidget(title)
         
-        instructions = QLabel("🖱️ Arraste: Rotacionar câmera\n🖱️ Scroll: Zoom\n✨ Phong usa shaders GLSL")
+        # Instruções
+        instructions = QLabel(
+            "🖱️ Arraste: Rotacionar câmera\n"
+            "🖱️ Scroll: Zoom\n"
+            "⬆️⬇️ Setas: Translação no eixo Y\n"
+            "⬅️➡️ Setas: Translação no eixo X\n"
+            "W / S: Translação no eixo Z\n"
+            "✨ Phong usa shaders GLSL"
+        )
         instructions.setStyleSheet("color: #888; font-size: 11px;")
         layout.addWidget(instructions)
         
+        # GRUPO: SELEÇÃO DE OBJETO
         object_group = QGroupBox("Objeto")
         object_layout = QVBoxLayout()
         
@@ -218,6 +229,9 @@ class MainWindow(QMainWindow):
         
         return panel
     
+    # ========================================================================
+    # MÉTODOS AUXILIARES
+    # ========================================================================
     
     def create_slider(self, min_val, max_val, default, callback):
         """
@@ -242,6 +256,9 @@ class MainWindow(QMainWindow):
         slider.valueChanged.connect(callback)
         return slider
     
+    # ========================================================================
+    # CALLBACKS DOS CONTROLES
+    # ========================================================================
     
     def change_object(self, text):
         """
@@ -427,6 +444,12 @@ class MainWindow(QMainWindow):
         self.gl_widget.rotation_y = 45
         self.gl_widget.rotation_z = 0
         self.gl_widget.scale_factor = 1.0
+
+        # Resetar translação para a origem
+        self.gl_widget.translation_x = 0.0
+        self.gl_widget.translation_y = 0.0
+        self.gl_widget.translation_z = 0.0
+
         self.gl_widget.scene.camera.distance = 8.0
         self.gl_widget.scene.camera.angle_x = 0
         self.gl_widget.scene.camera.angle_y = 0

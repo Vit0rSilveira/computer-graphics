@@ -53,6 +53,12 @@ class OpenGLWidget(QOpenGLWidget):
         self.translation_x = 0
         self.translation_y = 0
         self.translation_z = 0
+
+        # Passo de translação (unidades por pressão de tecla)
+        self.translation_step = 0.2
+
+        # Permitir que o widget receba eventos de teclado (setas, etc.)
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         
         # Configurações de visualização
         self.projection_type = 'perspective'
@@ -243,6 +249,8 @@ class OpenGLWidget(QOpenGLWidget):
         
         for i, (pos_x, shading_key, color) in enumerate(zip(positions, shading_keys, colors)):
             glPushMatrix()
+
+            glTranslatef(self.translation_x, self.translation_y, self.translation_z)
             
             # Posicionar objeto
             glTranslatef(pos_x, 0, 0)
@@ -432,10 +440,50 @@ class OpenGLWidget(QOpenGLWidget):
                            Qt.AlignmentFlag.AlignCenter, label)
         
         painter.end()
+
+
+    # EVENTOS DE TECLADO (TRANSLACAO DO OBJETO)
+    def keyPressEvent(self, event):
+        """
+        Traduz o objeto 3D usando teclado.
+
+        ← e → movem no eixo X;
+        ↑ e ↓ movem no eixo Y;
+        W e S movem no eixo Z.
+        """
+        key = event.key()
+        moved = False
+
+        if key == Qt.Key.Key_Left:
+            self.translation_x -= self.translation_step
+            moved = True
+        elif key == Qt.Key.Key_Right:
+            self.translation_x += self.translation_step
+            moved = True
+        elif key == Qt.Key.Key_Up:
+            self.translation_y += self.translation_step
+            moved = True
+        elif key == Qt.Key.Key_Down:
+            self.translation_y -= self.translation_step
+            moved = True
+        elif key == Qt.Key.Key_W:
+            # Aproxima o objeto da câmera (Z+)
+            self.translation_z += self.translation_step
+            moved = True
+        elif key == Qt.Key.Key_S:
+            # Afasta o objeto da câmera (Z-)
+            self.translation_z -= self.translation_step
+            moved = True
+
+        if moved:
+            self.update()
+        else:
+            super().keyPressEvent(event)
+
+
+
     
-    # ========================================================================
     # EVENTOS DE MOUSE PARA CONTROLE DE CÂMERA
-    # ========================================================================
     
     def mousePressEvent(self, event):
         """
