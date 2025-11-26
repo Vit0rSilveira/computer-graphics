@@ -1,7 +1,3 @@
-"""
-Implementação do modelo Flat Shading.
-"""
-
 from OpenGL.GL import *
 from shading.shading_model import ShadingModel
 
@@ -31,4 +27,4 @@ class FlatShading(ShadingModel):
         usando a normal do primeiro vértice (provoking vertex).
         """
         glShadeModel(GL_FLAT)
-        glUseProgram(0)  # Usa pipeline fixo
+        glUseProgram(0)

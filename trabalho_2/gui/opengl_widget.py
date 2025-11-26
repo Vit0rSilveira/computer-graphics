@@ -1,7 +1,3 @@
-"""
-Widget OpenGL para renderização 3D.
-"""
-
 import numpy as np
 from PyQt6.QtCore import QTimer
 from PyQt6.QtOpenGLWidgets import QOpenGLWidget

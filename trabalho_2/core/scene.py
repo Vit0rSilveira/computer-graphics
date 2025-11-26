@@ -1,7 +1,3 @@
-"""
-Classe Scene3D para gerenciar a cena 3D completa.
-"""
-
 from core.camera import Camera
 from core.light import Light
 from core.material import Material

@@ -1,7 +1,3 @@
-"""
-Classe Camera para controle de câmera orbital.
-"""
-
 import math
 from OpenGL.GLU import *
 from core.vector3d import Vector3D

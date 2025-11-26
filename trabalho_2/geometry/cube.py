@@ -1,7 +1,3 @@
-"""
-Implementação de um cubo 3D.
-"""
-
 from OpenGL.GL import *
 from geometry.geometry3d import Geometry3D
 

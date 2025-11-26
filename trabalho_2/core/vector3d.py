@@ -1,7 +1,3 @@
-"""
-Classe Vector3D para operações vetoriais 3D.
-"""
-
 import math
 
 

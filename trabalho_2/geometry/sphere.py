@@ -1,7 +1,3 @@
-"""
-Implementação de uma esfera 3D.
-"""
-
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from geometry.geometry3d import Geometry3D

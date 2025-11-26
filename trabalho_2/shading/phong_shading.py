@@ -1,10 +1,3 @@
-"""
-Implementação do modelo Phong Shading usando shaders GLSL.
-
-Este arquivo contém a implementação completa do algoritmo de Phong,
-incluindo os shaders de vértice e fragmento escritos em GLSL.
-"""
-
 import numpy as np
 from OpenGL.GL import *
 from OpenGL.GL import shaders
@@ -200,10 +193,7 @@ class PhongShading(ShadingModel):
         normal_loc = glGetUniformLocation(self.shader_program, "normal_matrix")
         glUniformMatrix3fv(normal_loc, 1, GL_FALSE, normal_matrix)
         
-        # ====================================================================
         # PROPRIEDADES DA LUZ
-        # ====================================================================
-        
         light_pos_loc = glGetUniformLocation(self.shader_program, "light_position")
         light_amb_loc = glGetUniformLocation(self.shader_program, "light_ambient")
         light_diff_loc = glGetUniformLocation(self.shader_program, "light_diffuse")
@@ -214,10 +204,7 @@ class PhongShading(ShadingModel):
         glUniform3fv(light_diff_loc, 1, light.diffuse)
         glUniform3fv(light_spec_loc, 1, light.specular)
         
-        # ====================================================================
         # PROPRIEDADES DO MATERIAL - USAR COR DO OPENGL
-        # ====================================================================
-        
         # Pegar cor atual do OpenGL (glColor)
         current_color = glGetFloatv(GL_CURRENT_COLOR)
         color_rgb = [current_color[0], current_color[1], current_color[2]]
@@ -240,10 +227,7 @@ class PhongShading(ShadingModel):
         # Brilho
         glUniform1f(mat_shin_loc, material.shininess)
         
-        # ====================================================================
         # POSIÇÃO DA CÂMERA
-        # ====================================================================
-        
         view_pos_loc = glGetUniformLocation(self.shader_program, "view_position")
         glUniform3f(view_pos_loc, camera_pos.x, camera_pos.y, camera_pos.z)
     

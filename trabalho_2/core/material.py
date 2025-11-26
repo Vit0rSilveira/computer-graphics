@@ -1,7 +1,3 @@
-"""
-Classe Material para propriedades de materiais.
-"""
-
 from OpenGL.GL import *
 
 

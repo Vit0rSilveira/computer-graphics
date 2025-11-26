@@ -1,7 +1,3 @@
-"""
-Janela principal da aplicação.
-"""
-
 from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
                              QPushButton, QLabel, QSlider, QComboBox,
                              QGroupBox, QGridLayout)
@@ -81,19 +77,14 @@ class MainWindow(QMainWindow):
         panel = QWidget()
         layout = QVBoxLayout(panel)
         
-        # Título
         title = QLabel("Controles 3D")
         title.setStyleSheet("font-size: 16px; font-weight: bold;")
         layout.addWidget(title)
         
-        # Instruções
         instructions = QLabel("🖱️ Arraste: Rotacionar câmera\n🖱️ Scroll: Zoom\n✨ Phong usa shaders GLSL")
         instructions.setStyleSheet("color: #888; font-size: 11px;")
         layout.addWidget(instructions)
         
-        # ====================================================================
-        # GRUPO: SELEÇÃO DE OBJETO
-        # ====================================================================
         object_group = QGroupBox("Objeto")
         object_layout = QVBoxLayout()
         
@@ -106,9 +97,7 @@ class MainWindow(QMainWindow):
         object_group.setLayout(object_layout)
         layout.addWidget(object_group)
         
-        # ====================================================================
         # GRUPO: MODELO DE ILUMINAÇÃO
-        # ====================================================================
         lighting_group = QGroupBox("Modelo de Iluminação")
         lighting_layout = QVBoxLayout()
         
@@ -122,9 +111,7 @@ class MainWindow(QMainWindow):
         lighting_group.setLayout(lighting_layout)
         layout.addWidget(lighting_group)
         
-        # ====================================================================
         # BOTÃO: MODO COMPARAÇÃO
-        # ====================================================================
         comparison_btn = QPushButton("🔀 Modo Comparação")
         comparison_btn.setCheckable(True)
         comparison_btn.clicked.connect(self.toggle_comparison_mode)
@@ -146,9 +133,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(comparison_btn)
         self.comparison_btn = comparison_btn
         
-        # ====================================================================
         # GRUPO: TIPO DE PROJEÇÃO
-        # ====================================================================
         projection_group = QGroupBox("Projeção")
         projection_layout = QVBoxLayout()
         
@@ -161,9 +146,7 @@ class MainWindow(QMainWindow):
         projection_group.setLayout(projection_layout)
         layout.addWidget(projection_group)
         
-        # ====================================================================
         # GRUPO: ROTAÇÃO DO OBJETO
-        # ====================================================================
         rotation_group = QGroupBox("Rotação do Objeto")
         rotation_layout = QGridLayout()
         
@@ -185,9 +168,7 @@ class MainWindow(QMainWindow):
         rotation_group.setLayout(rotation_layout)
         layout.addWidget(rotation_group)
         
-        # ====================================================================
         # GRUPO: ESCALA
-        # ====================================================================
         scale_group = QGroupBox("Escala")
         scale_layout = QVBoxLayout()
         
@@ -199,9 +180,7 @@ class MainWindow(QMainWindow):
         scale_group.setLayout(scale_layout)
         layout.addWidget(scale_group)
         
-        # ====================================================================
         # GRUPO: POSIÇÃO DA LUZ
-        # ====================================================================
         light_group = QGroupBox("Posição da Luz")
         light_layout = QGridLayout()
         
@@ -223,9 +202,7 @@ class MainWindow(QMainWindow):
         light_group.setLayout(light_layout)
         layout.addWidget(light_group)
         
-        # ====================================================================
         # BOTÕES DE AÇÃO
-        # ====================================================================
         btn_layout = QVBoxLayout()
         
         self.animate_btn = QPushButton("▶ Animar Rotação")
@@ -241,9 +218,6 @@ class MainWindow(QMainWindow):
         
         return panel
     
-    # ========================================================================
-    # MÉTODOS AUXILIARES
-    # ========================================================================
     
     def create_slider(self, min_val, max_val, default, callback):
         """
@@ -268,9 +242,6 @@ class MainWindow(QMainWindow):
         slider.valueChanged.connect(callback)
         return slider
     
-    # ========================================================================
-    # CALLBACKS DOS CONTROLES
-    # ========================================================================
     
     def change_object(self, text):
         """

@@ -1,8 +1,3 @@
-"""
-Classe base abstrata para modelos de iluminação.
-"""
-
-
 class ShadingModel:
     """
     Classe base abstrata para modelos de iluminação/sombreamento.

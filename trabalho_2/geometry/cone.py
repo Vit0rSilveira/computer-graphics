@@ -1,7 +1,3 @@
-"""
-Implementação de um cone 3D.
-"""
-
 import math
 from OpenGL.GL import *
 from geometry.geometry3d import Geometry3D
@@ -29,10 +25,10 @@ class Cone(Geometry3D):
         Args:
             use_shaders (bool): Não usado
         """
-        # Desenhar corpo do cone (lateral)
+
         self._draw_body()
         
-        # Desenhar base
+
         self._draw_base()
     
     def _draw_body(self):

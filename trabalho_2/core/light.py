@@ -1,7 +1,3 @@
-"""
-Classe Light para representar fontes de luz.
-"""
-
 from OpenGL.GL import *
 from core.vector3d import Vector3D
 

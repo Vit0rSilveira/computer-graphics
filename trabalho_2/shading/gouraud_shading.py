@@ -1,7 +1,3 @@
-"""
-Implementação do modelo Gouraud Shading.
-"""
-
 from OpenGL.GL import *
 from shading.shading_model import ShadingModel
 
@@ -31,4 +27,4 @@ class GouraudShading(ShadingModel):
         através da primitiva usando interpolação linear.
         """
         glShadeModel(GL_SMOOTH)
-        glUseProgram(0)  # Usa pipeline fixo
+        glUseProgram(0)

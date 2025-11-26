@@ -1,7 +1,3 @@
-"""
-Implementação de uma pirâmide 3D.
-"""
-
 from OpenGL.GL import *
 from geometry.geometry3d import Geometry3D
 from core.vector3d import Vector3D

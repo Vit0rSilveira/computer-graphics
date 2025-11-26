@@ -1,8 +1,3 @@
-"""
-Classe base abstrata para objetos geométricos 3D.
-"""
-
-
 class Geometry3D:
     """
     Classe base abstrata para objetos geométricos 3D.
